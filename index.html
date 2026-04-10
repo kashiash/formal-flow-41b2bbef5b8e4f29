@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schemat Procesu Pobierania Dokumentów</title>
+  <style>
+    :root {
+      --bg-1: #04131f;
+      --bg-2: #0a0f2e;
+      --grid: rgba(76, 201, 240, 0.12);
+      --cyan: #66f7ff;
+      --pink: #ff4fd8;
+      --lime: #b7ff57;
+      --orange: #ff9f43;
+      --text: #ebffff;
+      --muted: #9bc6d1;
+      --panel: rgba(5, 18, 34, 0.72);
+      --border: rgba(102, 247, 255, 0.45);
+      --shadow-cyan: 0 0 10px rgba(102, 247, 255, 0.55), 0 0 24px rgba(102, 247, 255, 0.25);
+      --shadow-pink: 0 0 10px rgba(255, 79, 216, 0.55), 0 0 24px rgba(255, 79, 216, 0.22);
+      --shadow-lime: 0 0 10px rgba(183, 255, 87, 0.5), 0 0 24px rgba(183, 255, 87, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255, 79, 216, 0.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(102, 247, 255, 0.14), transparent 24%),
+        linear-gradient(180deg, var(--bg-2), var(--bg-1));
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.35));
+      pointer-events: none;
+    }
+
+    .wrap {
+      width: min(1280px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 64px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 28px 20px 10px;
+    }
+
+    .eyebrow {
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      font-size: 0.82rem;
+      text-shadow: var(--shadow-cyan);
+    }
+
+    h1 {
+      margin: 14px 0 12px;
+      font-size: clamp(2.2rem, 5vw, 4.8rem);
+      line-height: 0.95;
+      text-transform: uppercase;
+      color: #ffffff;
+      text-shadow:
+        0 0 8px rgba(255, 255, 255, 0.7),
+        0 0 18px rgba(102, 247, 255, 0.55),
+        0 0 36px rgba(255, 79, 216, 0.35);
+    }
+
+    .subtitle {
+      max-width: 840px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: 1.02rem;
+      line-height: 1.6;
+    }
+
+    .flow {
+      display: grid;
+      gap: 18px;
+      margin-top: 28px;
+    }
+
+    .card {
+      position: relative;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow-cyan);
+    }
+
+    .card.pink {
+      border-color: rgba(255, 79, 216, 0.48);
+      box-shadow: var(--shadow-pink);
+    }
+
+    .card.lime {
+      border-color: rgba(183, 255, 87, 0.45);
+      box-shadow: var(--shadow-lime);
+    }
+
+    .card.orange {
+      border-color: rgba(255, 159, 67, 0.45);
+      box-shadow: 0 0 10px rgba(255, 159, 67, 0.48), 0 0 24px rgba(255, 159, 67, 0.18);
+    }
+
+    .card::after {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      pointer-events: none;
+    }
+
+    .label {
+      display: inline-block;
+      margin-bottom: 10px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cyan);
+    }
+
+    .card h2,
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .card p,
+    .card li {
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .entry {
+      text-align: center;
+      animation: pulseEntry 3s ease-in-out infinite;
+    }
+
+    .entry .command {
+      margin-top: 14px;
+      display: inline-block;
+      padding: 12px 18px;
+      border: 1px solid rgba(102, 247, 255, 0.45);
+      border-radius: 14px;
+      color: var(--cyan);
+      background: rgba(7, 28, 54, 0.6);
+      font-family: "Courier New", monospace;
+      box-shadow: var(--shadow-cyan);
+    }
+
+    .arrow {
+      text-align: center;
+      font-size: 2.4rem;
+      color: var(--cyan);
+      text-shadow: var(--shadow-cyan);
+      animation: drift 1.8s ease-in-out infinite;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .split .card {
+      min-height: 100%;
+    }
+
+    .lanes {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .channels {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .channel {
+      display: grid;
+      gap: 12px;
+      align-content: start;
+      grid-template-rows: minmax(190px, auto) 44px minmax(265px, auto);
+    }
+
+    .channel-arrow {
+      text-align: center;
+      font-size: 2rem;
+      color: var(--cyan);
+      text-shadow: var(--shadow-cyan);
+      animation: drift 1.8s ease-in-out infinite;
+    }
+
+    ul {
+      margin: 12px 0 0;
+      padding-left: 18px;
+    }
+
+    .lanes .card {
+      min-height: 220px;
+    }
+
+    .merge {
+      display: grid;
+      grid-template-columns: 1.2fr 0.85fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .rule {
+      margin-top: 22px;
+      padding: 18px 20px;
+      border: 1px solid rgba(255, 79, 216, 0.42);
+      border-radius: 20px;
+      background: rgba(38, 10, 47, 0.44);
+      text-align: center;
+      box-shadow: var(--shadow-pink);
+    }
+
+    .rule strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #fff;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      text-shadow: var(--shadow-pink);
+    }
+
+    .rule code {
+      color: var(--lime);
+      font-size: 1rem;
+      text-shadow: var(--shadow-lime);
+    }
+
+    .foot {
+      margin-top: 26px;
+      text-align: center;
+      color: rgba(235, 255, 255, 0.72);
+      font-size: 0.92rem;
+    }
+
+    @keyframes drift {
+      0%, 100% { transform: translateY(0); opacity: 0.8; }
+      50% { transform: translateY(6px); opacity: 1; }
+    }
+
+    @keyframes pulseEntry {
+      0%, 100% { box-shadow: var(--shadow-cyan); }
+      50% { box-shadow: 0 0 16px rgba(102, 247, 255, 0.75), 0 0 36px rgba(255, 79, 216, 0.2); }
+    }
+
+    @media (max-width: 960px) {
+      .split,
+      .lanes,
+      .channels,
+      .merge {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <div class="eyebrow">Proces Operacyjny</div>
+      <h1>Schemat Procesu<br>Pobierania Dokumentów</h1>
+      <p class="subtitle">
+        To jest proces operacyjny do obsługi dokumentów formalnych. System cyklicznie sprawdza,
+        co jest do pobrania, pobiera z API listę spraw wraz z danymi klientów i typami dokumentów,
+        kieruje sprawy do właściwych ścieżek wykonania i domyka obieg w systemie.
+      </p>
+    </section>
+
+    <section class="flow">
+      <div class="card entry">
+        <div class="label">Start</div>
+        <h2>Stały Nadzór</h2>
+        <p>Proces działa cyklicznie i w regularnych odstępach sprawdza, czy pojawiły się nowe sprawy do obsługi.</p>
+        <div class="command">Automatyczne sprawdzanie w tle</div>
+      </div>
+
+      <div class="arrow">↓</div>
+
+      <div class="card">
+        <div class="label">Krok 1</div>
+        <h2>Odczyt Zleceń Z API</h2>
+        <p>
+          System łączy się z API Fleetman i pobiera listę najemów, w których brakuje dokumentów formalnych dla klientów.
+        </p>
+        <ul>
+          <li>system pobiera z Fleetmana listę najemów z brakującymi dokumentami</li>
+          <li>dla każdej pozycji odczytywane są dane klienta i dane potrzebne do dalszego pobrania</li>
+          <li>to wejście definiuje zakres pracy dla całego przebiegu</li>
+        </ul>
+      </div>
+
+      <div class="arrow">↓</div>
+
+      <div class="card pink">
+        <div class="label">Krok 2</div>
+        <h3>Podział Operacyjny</h3>
+        <p>System dzieli otrzymane dane na rodzaje dokumentów, które trzeba pobrać: KRS, CEIDG albo GUS.</p>
+        <ul>
+          <li>analizowany jest typ klienta i wymagany rodzaj dokumentu</li>
+          <li>każda sprawa trafia do odpowiedniej grupy: KRS, CEIDG albo GUS</li>
+          <li>po podziale uruchamiane są trzy równoległe ścieżki wykonawcze</li>
+        </ul>
+      </div>
+
+      <div class="arrow">↓</div>
+
+      <div class="lanes">
+        <div class="card">
+          <div class="label">Podział</div>
+          <h3>Ścieżka KRS</h3>
+          <p>Tu trafiają spółki i inne podmioty rejestrowe obsługiwane przez KRS.</p>
+          <ul>
+            <li>spółki z ograniczoną odpowiedzialnością</li>
+            <li>spółki akcyjne i proste spółki akcyjne</li>
+            <li>spółki komandytowe, jawne i inne podmioty rejestrowe</li>
+          </ul>
+        </div>
+        <div class="card orange">
+          <div class="label">Podział</div>
+          <h3>Ścieżka CEIDG</h3>
+          <p>Tu trafiają przedsiębiorcy indywidualni obsługiwani przez CEIDG.</p>
+          <ul>
+            <li>jednoosobowe działalności gospodarcze</li>
+            <li>osoby fizyczne prowadzące działalność gospodarczą</li>
+          </ul>
+        </div>
+        <div class="card lime">
+          <div class="label">Podział</div>
+          <h3>Ścieżka GUS</h3>
+          <p>Tu trafiają podmioty wymagające pobrania danych przez rejestr REGON/GUS.</p>
+          <ul>
+            <li>podmioty publiczne i administracyjne</li>
+            <li>część przypadków specjalnych, które nie idą przez KRS ani CEIDG</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="channels">
+        <div class="channel">
+          <div class="card">
+            <div class="label">KRS-1</div>
+            <h3>Przygotowanie Kolejki KRS</h3>
+            <p>Po podziale sprawy KRS trafiają do osobnej kolejki operacyjnej dla dokumentów z Krajowego Rejestru Sądowego.</p>
+            <ul>
+              <li>tworzona jest robocza lista spraw dla podmiotów rejestrowych</li>
+              <li>system przygotowuje dane potrzebne do wyszukania dokumentu</li>
+            </ul>
+          </div>
+          <div class="channel-arrow">↓</div>
+          <div class="card">
+            <div class="label">KRS-2</div>
+            <h3>Pobranie Dokumentów Z KRS</h3>
+            <p>System łączy się z wyszukiwarką KRS i pobiera dokument właściwy dla danej sprawy.</p>
+            <ul>
+              <li>dane wejściowe pochodzą z API</li>
+              <li>na tym etapie system łączy się z rejestrem KRS</li>
+              <li>wynikiem jest gotowy dokument do dalszego obiegu</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="channel">
+          <div class="card orange">
+            <div class="label">CEIDG-1</div>
+            <h3>Przygotowanie Kolejki CEIDG</h3>
+            <p>Sprawy przedsiębiorców indywidualnych trafiają do kolejki obsługującej pobrania z CEIDG.</p>
+            <ul>
+              <li>tworzona jest oddzielna lista spraw dla działalności gospodarczych</li>
+              <li>system przygotowuje dane potrzebne do wyszukania wpisu</li>
+            </ul>
+          </div>
+          <div class="channel-arrow">↓</div>
+          <div class="card orange">
+            <div class="label">CEIDG-2</div>
+            <h3>Pobranie Dokumentów Z CEIDG</h3>
+            <p>System łączy się z CEIDG i pobiera wpis przedsiębiorcy oraz dokumenty dodatkowe, jeśli są wymagane.</p>
+            <ul>
+              <li>wpis działalności</li>
+              <li>dokumenty dodatkowe</li>
+              <li>na tym etapie system łączy się z rejestrem CEIDG</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="channel">
+          <div class="card lime">
+            <div class="label">GUS-1</div>
+            <h3>Przygotowanie Kolejki GUS</h3>
+            <p>Sprawy kierowane do rejestru REGON/GUS trafiają do własnej kolejki wykonawczej.</p>
+            <ul>
+              <li>wydzielana jest lista spraw obsługiwanych poza KRS i CEIDG</li>
+              <li>system przygotowuje dane potrzebne do pobrania raportu</li>
+            </ul>
+          </div>
+          <div class="channel-arrow">↓</div>
+          <div class="card lime">
+            <div class="label">GUS-2</div>
+            <h3>Pobranie Dokumentów Z GUS</h3>
+            <p>System łączy się z wyszukiwarką REGON/GUS i pobiera dokument dla podmiotów kierowanych do tej ścieżki.</p>
+            <ul>
+              <li>na tym etapie system łączy się z rejestrem GUS/REGON</li>
+              <li>pobierany jest właściwy raport dla tej grupy spraw</li>
+              <li>wynikiem jest dokument gotowy do dalszego obiegu</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="arrow">↓</div>
+
+      <div class="card pink">
+        <div class="label">Krok 5</div>
+        <h2>Zebranie Wyników</h2>
+        <p>
+          Pobrane dokumenty są porządkowane i przygotowywane do przekazania do dalszego obiegu.
+        </p>
+        <ul>
+          <li>w jednym miejscu zbierane są wyniki ze wszystkich ścieżek pobierania</li>
+          <li>dla każdej sprawy wiadomo, jaki dokument został uzyskany</li>
+          <li>na tym etapie kończy się część pobierająca</li>
+        </ul>
+      </div>
+
+      <div class="arrow">↓</div>
+
+      <div class="card">
+        <div class="label">Krok 6</div>
+        <h2>Przygotowanie Do Obiegu</h2>
+        <p>
+          Każdy dokument jest przypisywany do właściwej sprawy i przygotowywany do automatycznego wgrania.
+        </p>
+        <ul>
+          <li>system mapuje dokument do właściwego klienta i sprawy</li>
+          <li>ustalany jest typ dokumentu i miejsce docelowe w systemie</li>
+          <li>tworzona jest gotowa lista pozycji do wgrania</li>
+        </ul>
+      </div>
+
+      <div class="arrow">↓</div>
+
+      <div class="card lime">
+        <div class="label">Krok 7</div>
+        <h2>Wgranie Do Systemu</h2>
+        <p>
+          Dokument trafia do właściwej sprawy w systemie bez ręcznego podpinania.
+        </p>
+        <ul>
+          <li>każdy dokument jest wysyłany do odpowiadającej mu sprawy</li>
+          <li>zachowany jest właściwy typ dokumentu w obiegu</li>
+          <li>efektem jest komplet dokumentów podpiętych tam, gdzie trzeba</li>
+        </ul>
+      </div>
+
+      <div class="arrow">↓</div>
+
+      <div class="card orange">
+        <div class="label">Krok 8</div>
+        <h2>Raport Operacyjny</h2>
+        <p>
+          Na końcu powstaje wynik operacyjny: co zostało wykonane, co czeka i co wymaga uwagi.
+        </p>
+        <ul>
+          <li>powstaje podsumowanie przebiegu dla całego batcha</li>
+          <li>widać liczbę spraw obsłużonych i spraw wymagających dalszego działania</li>
+          <li>raport zamyka przebieg i daje podstawę do dalszego monitoringu</li>
+        </ul>
+      </div>
+
+    </section>
+  </main>
+</body>
+</html>
