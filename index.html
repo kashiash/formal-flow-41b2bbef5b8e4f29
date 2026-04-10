@@ -213,15 +213,7 @@
       display: grid;
       gap: 12px;
       align-content: start;
-      grid-template-rows: 300px 52px 410px;
-    }
-
-    .channel-arrow {
-      text-align: center;
-      font-size: 2rem;
-      color: var(--cyan);
-      text-shadow: var(--shadow-cyan);
-      animation: drift 1.8s ease-in-out infinite;
+      grid-template-rows: 410px;
     }
 
     ul {
@@ -314,9 +306,9 @@
       <div class="eyebrow">Biurwa</div>
       <h1>Podsystem Pobierania<br>Dokumentów Firm z KRS, GUS i CEIDG</h1>
       <p class="subtitle">
-        To jest proces operacyjny do obsługi dokumentów formalnych. System cyklicznie sprawdza,
-        co jest do pobrania, pobiera z API listę spraw wraz z danymi klientów i typami dokumentów,
-        kieruje sprawy do właściwych ścieżek wykonania i domyka obieg w systemie.
+        To jest proces operacyjny do obsługi dokumentów formalnych firm. System pobiera z Fleetmana
+        listę najemów z brakującymi dokumentami, dzieli je na KRS, CEIDG i GUS, uruchamia trzy
+        równoległe ścieżki pobrania, a potem wgrywa wynik do systemu i raportuje przebieg.
       </p>
     </section>
 
@@ -324,7 +316,7 @@
       <div class="card entry">
         <div class="label">Start</div>
         <h2>Stały Nadzór</h2>
-        <p>Proces działa cyklicznie i w regularnych odstępach sprawdza, czy pojawiły się nowe sprawy do obsługi.</p>
+        <p>Proces działa cyklicznie i uruchamia kolejne przebiegi bez ręcznego startu.</p>
         <div class="command">Automatyczne sprawdzanie w tle</div>
       </div>
 
@@ -337,7 +329,6 @@
           System łączy się z API Fleetman i pobiera listę najemów, w których brakuje dokumentów formalnych dla klientów.
         </p>
         <ul>
-          <li>system pobiera z Fleetmana listę najemów z brakującymi dokumentami</li>
           <li>dla każdej pozycji odczytywane są dane klienta i dane potrzebne do dalszego pobrania</li>
           <li>to wejście definiuje zakres pracy dla całego przebiegu</li>
         </ul>
@@ -351,63 +342,20 @@
         <p>System dzieli otrzymane dane na rodzaje dokumentów, które trzeba pobrać: KRS, CEIDG albo GUS.</p>
         <ul>
           <li>analizowany jest typ klienta i wymagany rodzaj dokumentu</li>
-          <li>każda sprawa trafia do odpowiedniej grupy: KRS, CEIDG albo GUS</li>
           <li>po podziale uruchamiane są trzy równoległe ścieżki wykonawcze</li>
         </ul>
       </div>
 
       <div class="arrow">↓</div>
 
-      <div class="lanes">
-        <div class="card">
-          <div class="label">Podział</div>
-          <h3>Ścieżka KRS</h3>
-          <p>Tu trafiają spółki i inne podmioty rejestrowe obsługiwane przez KRS.</p>
-          <ul>
-            <li>spółki z ograniczoną odpowiedzialnością</li>
-            <li>spółki akcyjne i proste spółki akcyjne</li>
-            <li>spółki komandytowe, jawne i inne podmioty rejestrowe</li>
-          </ul>
-        </div>
-        <div class="card orange">
-          <div class="label">Podział</div>
-          <h3>Ścieżka CEIDG</h3>
-          <p>Tu trafiają przedsiębiorcy indywidualni obsługiwani przez CEIDG.</p>
-          <ul>
-            <li>jednoosobowe działalności gospodarcze</li>
-            <li>osoby fizyczne prowadzące działalność gospodarczą</li>
-          </ul>
-        </div>
-        <div class="card lime">
-          <div class="label">Podział</div>
-          <h3>Ścieżka GUS</h3>
-          <p>Tu trafiają podmioty wymagające pobrania danych przez rejestr REGON/GUS.</p>
-          <ul>
-            <li>podmioty publiczne i administracyjne</li>
-            <li>część przypadków specjalnych, które nie idą przez KRS ani CEIDG</li>
-          </ul>
-        </div>
-      </div>
-
       <div class="channels">
         <div class="channel">
           <div class="card">
-            <div class="label">KRS-1</div>
-            <h3>Przygotowanie Kolejki KRS</h3>
-            <p>Po podziale sprawy KRS trafiają do osobnej kolejki operacyjnej dla dokumentów z Krajowego Rejestru Sądowego.</p>
-            <ul>
-              <li>tworzona jest robocza lista spraw dla podmiotów rejestrowych</li>
-              <li>system przygotowuje dane potrzebne do wyszukania dokumentu</li>
-            </ul>
-          </div>
-          <div class="channel-arrow">↓</div>
-          <div class="card">
-            <div class="label">KRS-2</div>
+            <div class="label">KRS</div>
             <h3>Pobranie Dokumentów Z KRS</h3>
             <p>System łączy się z wyszukiwarką KRS i pobiera dokument właściwy dla danej sprawy.</p>
             <ul>
-              <li>dane wejściowe pochodzą z API</li>
-              <li>na tym etapie system łączy się z rejestrem KRS</li>
+              <li>ta ścieżka obsługuje spółki i inne podmioty rejestrowe</li>
               <li>wynikiem jest gotowy dokument do dalszego obiegu</li>
             </ul>
           </div>
@@ -415,44 +363,24 @@
 
         <div class="channel">
           <div class="card orange">
-            <div class="label">CEIDG-1</div>
-            <h3>Przygotowanie Kolejki CEIDG</h3>
-            <p>Sprawy przedsiębiorców indywidualnych trafiają do kolejki obsługującej pobrania z CEIDG.</p>
-            <ul>
-              <li>tworzona jest oddzielna lista spraw dla działalności gospodarczych</li>
-              <li>system przygotowuje dane potrzebne do wyszukania wpisu</li>
-            </ul>
-          </div>
-          <div class="channel-arrow">↓</div>
-          <div class="card orange">
-            <div class="label">CEIDG-2</div>
+            <div class="label">CEIDG</div>
             <h3>Pobranie Dokumentów Z CEIDG</h3>
             <p>System łączy się z CEIDG i pobiera wpis przedsiębiorcy oraz dokumenty dodatkowe, jeśli są wymagane.</p>
             <ul>
+              <li>ta ścieżka obsługuje działalności gospodarcze</li>
               <li>wpis działalności</li>
               <li>dokumenty dodatkowe</li>
-              <li>na tym etapie system łączy się z rejestrem CEIDG</li>
             </ul>
           </div>
         </div>
 
         <div class="channel">
           <div class="card lime">
-            <div class="label">GUS-1</div>
-            <h3>Przygotowanie Kolejki GUS</h3>
-            <p>Sprawy kierowane do rejestru REGON/GUS trafiają do własnej kolejki wykonawczej.</p>
-            <ul>
-              <li>wydzielana jest lista spraw obsługiwanych poza KRS i CEIDG</li>
-              <li>system przygotowuje dane potrzebne do pobrania raportu</li>
-            </ul>
-          </div>
-          <div class="channel-arrow">↓</div>
-          <div class="card lime">
-            <div class="label">GUS-2</div>
+            <div class="label">GUS</div>
             <h3>Pobranie Dokumentów Z GUS</h3>
             <p>System łączy się z wyszukiwarką REGON/GUS i pobiera dokument dla podmiotów kierowanych do tej ścieżki.</p>
             <ul>
-              <li>na tym etapie system łączy się z rejestrem GUS/REGON</li>
+              <li>ta ścieżka obsługuje podmioty publiczne i inne przypadki specjalne</li>
               <li>pobierany jest właściwy raport dla tej grupy spraw</li>
               <li>wynikiem jest dokument gotowy do dalszego obiegu</li>
             </ul>
@@ -464,24 +392,9 @@
 
       <div class="card pink">
         <div class="label">Krok 5</div>
-        <h2>Zebranie Wyników</h2>
+        <h2>Przygotowanie Do Wgrania</h2>
         <p>
-          Pobrane dokumenty są porządkowane i przygotowywane do przekazania do dalszego obiegu.
-        </p>
-        <ul>
-          <li>w jednym miejscu zbierane są wyniki ze wszystkich ścieżek pobierania</li>
-          <li>dla każdej sprawy wiadomo, jaki dokument został uzyskany</li>
-          <li>na tym etapie kończy się część pobierająca</li>
-        </ul>
-      </div>
-
-      <div class="arrow">↓</div>
-
-      <div class="card">
-        <div class="label">Krok 6</div>
-        <h2>Przygotowanie Do Obiegu</h2>
-        <p>
-          Każdy dokument jest przypisywany do właściwej sprawy i przygotowywany do automatycznego wgrania.
+          Pobrane dokumenty są przypisywane do właściwych spraw i przygotowywane do automatycznego wgrania.
         </p>
         <ul>
           <li>system mapuje dokument do właściwego klienta i sprawy</li>
@@ -493,7 +406,7 @@
       <div class="arrow">↓</div>
 
       <div class="card lime">
-        <div class="label">Krok 7</div>
+        <div class="label">Krok 6</div>
         <h2>Wgranie Do Systemu</h2>
         <p>
           Dokument trafia do właściwej sprawy w systemie bez ręcznego podpinania.
@@ -508,7 +421,7 @@
       <div class="arrow">↓</div>
 
       <div class="card orange">
-        <div class="label">Krok 8</div>
+        <div class="label">Krok 7</div>
         <h2>Raport Operacyjny</h2>
         <p>
           Na końcu powstaje wynik operacyjny: co zostało wykonane, co czeka i co wymaga uwagi.
