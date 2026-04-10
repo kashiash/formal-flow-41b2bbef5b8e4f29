@@ -162,18 +162,20 @@
     .entry {
       text-align: center;
       animation: pulseEntry 3s ease-in-out infinite;
+      min-height: 260px;
     }
 
     .entry .command {
       margin-top: 14px;
       display: inline-block;
-      padding: 12px 18px;
+      padding: 14px 22px;
       border: 1px solid rgba(102, 247, 255, 0.45);
       border-radius: 14px;
       color: var(--cyan);
       background: rgba(7, 28, 54, 0.6);
       font-family: "Courier New", monospace;
       box-shadow: var(--shadow-cyan);
+      font-size: 1rem;
     }
 
     .arrow {
@@ -237,6 +239,14 @@
 
     .card ul {
       margin-top: auto;
+    }
+
+    .flow > .card:not(.entry):not(.pink):not(.lime):not(.orange) {
+      min-height: 250px;
+    }
+
+    .flow > .card.pink {
+      min-height: 250px;
     }
 
     .merge {
