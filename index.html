@@ -51,7 +51,7 @@
     }
 
     .wrap {
-      width: min(1280px, calc(100% - 32px));
+      width: min(1480px, calc(100% - 24px));
       margin: 0 auto;
       padding: 32px 0 64px;
     }
@@ -103,7 +103,7 @@
       background: var(--panel);
       border: 1px solid var(--border);
       border-radius: 22px;
-      padding: 20px;
+      padding: 26px;
       backdrop-filter: blur(10px);
       box-shadow: var(--shadow-cyan);
     }
@@ -147,7 +147,7 @@
     .card h2,
     .card h3 {
       margin: 0 0 8px;
-      font-size: 1.2rem;
+      font-size: 1.32rem;
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
@@ -155,7 +155,8 @@
     .card p,
     .card li {
       color: var(--muted);
-      line-height: 1.5;
+      line-height: 1.6;
+      font-size: 1.03rem;
     }
 
     .entry {
@@ -197,20 +198,20 @@
     .lanes {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
+      gap: 22px;
     }
 
     .channels {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
+      gap: 22px;
     }
 
     .channel {
       display: grid;
       gap: 12px;
       align-content: start;
-      grid-template-rows: 240px 44px 320px;
+      grid-template-rows: 300px 52px 410px;
     }
 
     .channel-arrow {
@@ -227,7 +228,7 @@
     }
 
     .lanes .card {
-      height: 240px;
+      height: 300px;
     }
 
     .channels .card {
